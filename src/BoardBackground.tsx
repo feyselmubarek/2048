@@ -7,7 +7,7 @@ const BoardBackground = () => {
     <div
       key={num}
       className={clsx(
-        "bg-white/5 rounded-md text-6xl m-2",
+        "dark:bg-white/5 bg-black/10 rounded-md text-6xl m-2",
         "flex justify-center items-center"
       )}
     />

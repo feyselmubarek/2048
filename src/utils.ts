@@ -1,24 +1,5 @@
-export type GameCard = {
-  x: number;
-  y: number;
-  val: number;
-  id: string;
-  pop?: boolean;
-};
-
-export type Game = GameCard[];
-
-export type State = {
-  game: Game;
-  moves: number;
-};
-
-const Direction = {
-  LEFT: "LEFT",
-  RIGHT: "RIGHT",
-  UP: "UP",
-  DOWN: "DOWN",
-};
+import { v4 as uuidv4 } from "uuid";
+import { Animation, Direction, Game, GameCard, State } from "./types";
 
 const DirectionNum = {
   LEFT: 1,
@@ -27,14 +8,12 @@ const DirectionNum = {
   DOWN: -1,
 };
 
-type Direction = keyof typeof Direction;
-
 export const ANIMATION_TIMEOUT = 200;
 
 const GRID_SIZE = 4;
 
 const COLORS: { [key: number]: string } = {
-  2: "bg-orange-200",
+  2: "bg-orange-400",
   4: "bg-lime-500",
   8: "bg-green-500",
   16: "bg-purple-500",
@@ -61,7 +40,7 @@ export const processVerticalMove = (
   // collect cards with similar x co'ordinate
   const map: { [key: number]: Game } = { 0: [], 1: [], 2: [], 3: [] };
   _game.forEach((card: GameCard) => {
-    delete card.pop;
+    delete card.animation;
     map[card.x].push(card);
   });
 
@@ -117,7 +96,7 @@ export const processHorizontalMove = (
   let moves = 0;
 
   _game.forEach((card: GameCard) => {
-    delete card.pop;
+    delete card.animation;
     map[card.y].push(card);
   });
 
@@ -173,7 +152,7 @@ export const getNextGame = (game: Game): Game => {
 
     if (cardsByXAndY[x][y]) {
       cardsByXAndY[x][y].val *= 2;
-      cardsByXAndY[x][y].pop = true;
+      cardsByXAndY[x][y].animation = Animation.ADD;
     } else {
       cardsByXAndY[x][y] = card;
     }
@@ -198,28 +177,28 @@ export const getNextGame = (game: Game): Game => {
   const random = [...set][Math.floor(Math.random() * set.size)];
 
   nextGame.push({
-    id: Math.random().toString(),
+    id: uuidv4(),
     val: 2,
     x: random % GRID_SIZE,
     y: Math.floor(random / GRID_SIZE),
-    pop: true,
+    animation: Animation.NEW,
   });
 
   return nextGame;
 };
 
 export const slideRtoL = (game: Game): State => {
-  return processHorizontalMove(game, Direction.LEFT as Direction);
+  return processHorizontalMove(game, Direction.LEFT);
 };
 
 export const slideLtoR = (game: Game): State => {
-  return processHorizontalMove(game, Direction.RIGHT as Direction);
+  return processHorizontalMove(game, Direction.RIGHT);
 };
 
 export const slideDtoU = (game: Game): State => {
-  return processVerticalMove(game, Direction.UP as Direction);
+  return processVerticalMove(game, Direction.UP);
 };
 
 export const slideUtoD = (game: Game): State => {
-  return processVerticalMove(game, Direction.DOWN as Direction);
+  return processVerticalMove(game, Direction.DOWN);
 };

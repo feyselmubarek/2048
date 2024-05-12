@@ -9,15 +9,22 @@ export default {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       keyframes: {
-        pop: {
+        add: {
           "25%, 50%": { transform: "scale(1.2)" },
           "75%, 100%": { transform: "scale(1)" },
         },
+        new: {
+          "0%, 30%": { transform: "scale(0.5)" },
+          "30%, 60%": { transform: "scale(1.2)" },
+          "60%, 100%": { transform: "scale(1)" },
+        },
       },
       animation: {
-        pop: "pop 1s cubic-bezier(0, 0, 0.2, 1)",
+        add: "add 0.75s cubic-bezier(0, 0, 0.2, 1)",
+        new: "new 0.75s cubic-bezier(0, 0, 0.2, 1)",
       },
     },
   },
+  darkMode: "selector",
   plugins: [],
 };

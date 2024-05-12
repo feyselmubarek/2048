@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import BoardBackground from "./BoardBackground";
 import {
-  GameCard,
   getNextGame,
   getBgColor,
   slideLtoR,
@@ -12,66 +11,55 @@ import {
   slideUtoD,
   slideDtoU,
 } from "./utils";
+import Heading from "./components/Heading";
+import { Animation, GameCard, KeyPress, SliderFunc, State } from "./types";
+import ThemeSelector from "./components/ThemeSelector";
+
+import gradientPng from "./assets/gradient.png";
+import gradientAvif from "./assets/gradient.avif";
+import gradientDarkPng from "./assets/gradient-dark.png";
+import gradientDarkAvif from "./assets/gradient-dark.avif";
+import { useTheme } from "./hooks/theme";
 
 function App() {
   const [game, setGame] = useState<GameCard[]>([]);
+  const [score, setScore] = useState(0);
+  const theme = useTheme();
 
   useEffect(() => {
+    function scheduleNext({ game, moves }: State) {
+      if (moves) {
+        setTimeout(() => {
+          setGame(getNextGame(game));
+          setScore((score) => score + moves);
+        }, ANIMATION_TIMEOUT);
+      }
+    }
+
+    function playWith(func: SliderFunc) {
+      setGame((prevGame) => {
+        const _state = func(prevGame);
+        scheduleNext(_state);
+        return _state.game;
+      });
+    }
+
     function keyDownHandler(e: KeyboardEvent) {
       switch (e.key) {
-        case "ArrowUp":
-          setGame((prevGame) => {
-            const _state = slideDtoU(prevGame);
-            if (_state.moves > 0) {
-              setTimeout(
-                () => setGame(getNextGame(_state.game)),
-                ANIMATION_TIMEOUT
-              );
-            }
-            return _state.game;
-          });
+        case KeyPress.UP:
+          playWith(slideDtoU);
           break;
 
-        case "ArrowDown":
-          setGame((prevGame) => {
-            const _state = slideUtoD(prevGame);
-            if (_state.moves > 0) {
-              setTimeout(
-                () => setGame(getNextGame(_state.game)),
-                ANIMATION_TIMEOUT
-              );
-            }
-            return _state.game;
-          });
+        case KeyPress.DOWN:
+          playWith(slideUtoD);
           break;
 
-        case "ArrowLeft":
-          setGame((prevGame) => {
-            const _state = slideRtoL(prevGame);
-            if (_state.moves > 0) {
-              setTimeout(
-                () => setGame(getNextGame(_state.game)),
-                ANIMATION_TIMEOUT
-              );
-            }
-            return _state.game;
-          });
+        case KeyPress.LEFT:
+          playWith(slideRtoL);
           break;
 
-        case "ArrowRight":
-          setGame((prevGame) => {
-            const _state = slideLtoR(prevGame);
-            if (_state.moves > 0) {
-              setTimeout(
-                () => setGame(getNextGame(_state.game)),
-                ANIMATION_TIMEOUT
-              );
-            }
-            return _state.game;
-          });
-          break;
-
-        default:
+        case KeyPress.RIGHT:
+          playWith(slideLtoR);
           break;
       }
     }
@@ -84,16 +72,37 @@ function App() {
   }, []);
 
   useEffect(() => {
-    function startGame() {
-      setGame(getNextGame([]));
-    }
-
-    startGame();
+    // start the game
+    setGame(getNextGame([]));
   }, []);
 
   return (
-    <main className="flex h-screen w-screen flex-col items-center justify-center p-24">
-      <div className="p-2 rounded-md bg-white/5">
+    <main
+      className={clsx(
+        "flex h-screen w-screen flex-col items-center justify-center",
+        {
+          dark: theme === "dark",
+        }
+      )}
+    >
+      <picture className="absolute -z-10 top-0 left-0 w-[75%]">
+        <source srcSet={gradientAvif} type="image/avif" />
+        <img src={gradientPng} className="dark:hidden" />
+      </picture>
+      <picture className="absolute -z-10 top-0 left-0 w-[75%]">
+        <source srcSet={gradientDarkAvif} type="image/avif" />
+        <img src={gradientDarkPng} className="dark:block" />
+      </picture>
+
+      <Heading
+        score={score}
+        onRefresh={() => {
+          setGame(getNextGame([]));
+          setScore(0);
+        }}
+      />
+
+      <div className="p-2 rounded-md dark:bg-white/5 bg-black/5">
         <div
           className={clsx(
             "xl:text-xl xl:rounded relative",
@@ -107,8 +116,8 @@ function App() {
               <div
                 key={box.id}
                 className={clsx(
-                  "absolute h-[25%] w-[25%] text-2xl md:text-5xl p-2",
-                  "flex justify-center items-center",
+                  "absolute h-[25%] w-[25%] text-2xl p-2",
+                  "md:text-5xl flex justify-center items-center",
                   "transition-all duration-200",
                   {
                     "top-[0%]": box.y === 0,
@@ -119,13 +128,15 @@ function App() {
                     "left-[25%]": box.x === 1,
                     "left-[50%]": box.x === 2,
                     "left-[75%]": box.x === 3,
-                    "animate-pop": box.pop,
+                    "animate-new": box.animation === Animation.NEW,
+                    "animate-add": box.animation === Animation.ADD,
                   }
                 )}
               >
                 <div
                   className={clsx(
-                    "w-full h-full rounded-md text-black flex justify-center items-center",
+                    "w-full h-full rounded-md text-black",
+                    "flex justify-center items-center",
                     getBgColor(box.val)
                   )}
                 >
@@ -136,6 +147,8 @@ function App() {
           })}
         </div>
       </div>
+
+      <ThemeSelector />
     </main>
   );
 }
