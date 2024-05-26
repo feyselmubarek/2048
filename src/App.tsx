@@ -20,28 +20,34 @@ import gradientAvif from "./assets/gradient.avif";
 import gradientDarkPng from "./assets/gradient-dark.png";
 import gradientDarkAvif from "./assets/gradient-dark.avif";
 import { useTheme } from "./hooks/theme";
+import Celebration from "./components/Celebration";
+
+let timeOutId: number | undefined = undefined;
 
 function App() {
+  const theme = useTheme();
   const [game, setGame] = useState<GameCard[]>([]);
   const [score, setScore] = useState(0);
-  const theme = useTheme();
 
   useEffect(() => {
     function scheduleNext({ game, moves }: State) {
       if (moves) {
-        setTimeout(() => {
+        timeOutId = setTimeout(() => {
           setGame(getNextGame(game));
           setScore((score) => score + moves);
+          timeOutId = undefined;
         }, ANIMATION_TIMEOUT);
       }
     }
 
     function playWith(func: SliderFunc) {
-      setGame((prevGame) => {
-        const _state = func(prevGame);
-        scheduleNext(_state);
-        return _state.game;
-      });
+      if (!timeOutId) {
+        setGame((prevGame) => {
+          const _state = func(prevGame);
+          scheduleNext(_state);
+          return _state.game;
+        });
+      }
     }
 
     function keyDownHandler(e: KeyboardEvent) {
@@ -76,6 +82,8 @@ function App() {
     setGame(getNextGame([]));
   }, []);
 
+  const isGameWon = game.filter((card) => card.val === 2048).length >= 1;
+
   return (
     <main
       className={clsx(
@@ -85,6 +93,7 @@ function App() {
         }
       )}
     >
+      {isGameWon && <Celebration score={score} bestScore={score} />}
       <picture className="absolute -z-10 top-0 left-0 w-[75%]">
         <source srcSet={gradientAvif} type="image/avif" />
         <img src={gradientPng} className="dark:hidden" />
@@ -117,7 +126,7 @@ function App() {
                 key={box.id}
                 className={clsx(
                   "absolute h-[25%] w-[25%] text-2xl p-2",
-                  "md:text-5xl flex justify-center items-center",
+                  "flex justify-center items-center",
                   "transition-all duration-200",
                   {
                     "top-[0%]": box.y === 0,
@@ -130,6 +139,8 @@ function App() {
                     "left-[75%]": box.x === 3,
                     "animate-new": box.animation === Animation.NEW,
                     "animate-add": box.animation === Animation.ADD,
+                    "md:text-5xl": box.val < 1024,
+                    "md:text-4xl": box.val >= 1024,
                   }
                 )}
               >

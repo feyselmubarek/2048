@@ -175,10 +175,11 @@ export const getNextGame = (game: Game): Game => {
   }
 
   const random = [...set][Math.floor(Math.random() * set.size)];
+  const randomVal = [2, 2, 2, 4][Math.floor(Math.random() * 4)];
 
   nextGame.push({
     id: uuidv4(),
-    val: 2,
+    val: randomVal,
     x: random % GRID_SIZE,
     y: Math.floor(random / GRID_SIZE),
     animation: Animation.NEW,
