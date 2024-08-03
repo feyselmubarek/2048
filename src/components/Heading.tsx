@@ -5,9 +5,10 @@ import { GiRecycle } from "react-icons/gi";
 type HeadingProps = {
   score: number;
   onRefresh: () => void;
+  showModal: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-const Heading = ({ onRefresh, score }: HeadingProps) => {
+const Heading = ({ onRefresh, score, showModal }: HeadingProps) => {
   return (
     <>
       <div className="">
@@ -59,6 +60,7 @@ const Heading = ({ onRefresh, score }: HeadingProps) => {
               "hover:dark:bg-white/15 hover:bg-primary/15 hover:text-accent",
               "transition-all duration-300"
             )}
+            onClick={showModal}
           >
             <FaInfo className="text-amber-700 dark:text-amber-400" />
           </button>

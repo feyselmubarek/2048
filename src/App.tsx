@@ -21,6 +21,8 @@ import gradientDarkPng from "./assets/gradient-dark.png";
 import gradientDarkAvif from "./assets/gradient-dark.avif";
 import { useTheme } from "./hooks/theme";
 import Celebration from "./components/Celebration";
+import TechStack from "./components/TechStack";
+import Modal from "./components/Model";
 
 let timeOutId: number | undefined = undefined;
 
@@ -28,6 +30,10 @@ function App() {
   const theme = useTheme();
   const [game, setGame] = useState<GameCard[]>([]);
   const [score, setScore] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     function scheduleNext({ game, moves }: State) {
@@ -104,6 +110,7 @@ function App() {
       </picture>
 
       <Heading
+        showModal={openModal}
         score={score}
         onRefresh={() => {
           setGame(getNextGame([]));
@@ -160,6 +167,8 @@ function App() {
       </div>
 
       <ThemeSelector />
+      <TechStack />
+      <Modal isOpen={isModalOpen} onClose={closeModal} />
     </main>
   );
 }
