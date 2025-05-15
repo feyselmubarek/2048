@@ -1,30 +1,20 @@
-# React + TypeScript + Vite
+# 2048
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## How to Play 2048
 
-Currently, two official plugins are available:
+Objective: Combine tiles to create a tile with the number 2048.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Instructions:
 
-## Expanding the ESLint configuration
+- Move Tiles: Use arrow keys or swipe to move tiles.
+- Combine Tiles: Tiles with the same number merge into one with their sum.
+- New Tiles: A new tile (2 or 4) appears after each move.
+- Win: Create a tile with 2048 to win.
+- Game Over: No moves left when the grid is full.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Tips:
+- Plan your moves.
+- Keep high-value tiles in a corner.
+- Combine strategically.
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+![Screenshot 2025-05-15 at 8 23 28 PM](https://github.com/user-attachments/assets/2f5d7e13-64ab-4bf3-8426-a26c125651bc)
